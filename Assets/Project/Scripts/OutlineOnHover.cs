@@ -1,8 +1,7 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Outline))]
-public class HighlightOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class HighlightOnHover : MonoBehaviour, IHoverable
 {
     private Outline outline;
 
@@ -12,12 +11,12 @@ public class HighlightOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExi
         outline.enabled = false; // start disabled
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnHoverEnter()
     {
         outline.enabled = true; // highlight on
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnHoverExit()
     {
         outline.enabled = false; // highlight off
     }
