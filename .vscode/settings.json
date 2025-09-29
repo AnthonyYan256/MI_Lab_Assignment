@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Homework Anthony Yan.sln"
+    "dotnet.defaultSolution": "MI_Lab_Assignment.sln"
 }
