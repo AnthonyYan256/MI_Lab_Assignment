@@ -1,23 +1,24 @@
-    using UnityEngine;
+using UnityEngine;
 
-    public class VertexCounter : MonoBehaviour
+// This script requires a MeshFilter component to be on the same GameObject.
+[RequireComponent(typeof(MeshFilter))]
+public class VertexCounter : MonoBehaviour
+{
+    void Start()
     {
-        void Start()
+        // Get the MeshFilter component attached to this object.
+        MeshFilter meshFilter = GetComponent<MeshFilter>();
+
+        if (meshFilter.mesh != null)
         {
-            // Get the MeshFilter component attached to this GameObject
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
-
-            if (meshFilter != null && meshFilter.mesh != null)
-            {
-                // Get the Mesh from the MeshFilter
-                Mesh mesh = meshFilter.mesh;
-
-                // Print the vertex count to the console
-                Debug.Log("Object: " + gameObject.name + " has " + mesh.vertexCount + " vertices.");
-            }
-            else
-            {
-                Debug.LogWarning("No MeshFilter or Mesh found on " + gameObject.name);
-            }
+            // Get the vertex count from the mesh.
+            int vertexCount = meshFilter.mesh.vertexCount;
+            // Print the result to the console.
+            Debug.Log(gameObject.name + " has " + vertexCount + " vertices.");
+        }
+        else
+        {
+            Debug.LogWarning("No mesh found on " + gameObject.name);
         }
     }
+}
