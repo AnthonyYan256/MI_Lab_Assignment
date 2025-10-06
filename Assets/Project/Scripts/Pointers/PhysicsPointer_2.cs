@@ -1,16 +1,16 @@
-// PhysicsPointer_2.cs
 using UnityEngine;
 
 public class PhysicsPointer_2 : MonoBehaviour
 {
-    [Tooltip("The default length of the laser pointer when it's not hitting anything.")]
+    [Tooltip("Set this in the Inspector to identify the controller.")]
+    public ControllerHand hand; // The identity of this pointer.
+
     public float defaultLength = 8.0f;
-
     private LineRenderer lineRenderer = null;
-    
-    // This will store the object we are currently hovering over
-    private IHoverable _currentHoverable = null;
+    private HoverableManager _currentManager = null;
 
+    // (Awake and Update methods are unchanged)
+    #region Unchanged Methods
     private void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
@@ -20,43 +20,42 @@ public class PhysicsPointer_2 : MonoBehaviour
     {
         UpdatePointer();
     }
+    #endregion
 
     private void UpdatePointer()
     {
         RaycastHit hit = CreateForwardRaycast();
         Vector3 endPosition = transform.position + (transform.forward * defaultLength);
 
-        // If we hit something, update the end position
         if (hit.collider != null)
         {
             endPosition = hit.point;
         }
         
-        // Update the line renderer
         lineRenderer.SetPosition(0, transform.position);
         lineRenderer.SetPosition(1, endPosition);
 
-        // Check for hoverable objects
         ProcessHover(hit);
     }
 
     private void ProcessHover(RaycastHit hit)
     {
-        // Try to get an IHoverable component from the object we hit
-        IHoverable hitHoverable = hit.collider?.GetComponent<IHoverable>();
+        HoverableManager hitManager = hit.collider?.GetComponent<HoverableManager>();
 
-        // If we are no longer hovering over the same object
-        if (_currentHoverable != hitHoverable)
+        if (_currentManager != hitManager)
         {
-            // If we were hovering over something before, tell it to exit
-            _currentHoverable?.OnHoverExit();
+            // Pass the hand identity when exiting the old manager.
+            _currentManager?.OnPointerExit(hand);
             
-            // Update the current hoverable object and tell it to enter
-            _currentHoverable = hitHoverable;
-            _currentHoverable?.OnHoverEnter();
+            _currentManager = hitManager;
+
+            // Pass the hand identity when entering the new manager.
+            _currentManager?.OnPointerEnter(hand);
         }
     }
 
+    // (CreateForwardRaycast method is unchanged)
+    #region Unchanged Methods
     private RaycastHit CreateForwardRaycast()
     {
         RaycastHit hit;
@@ -64,4 +63,5 @@ public class PhysicsPointer_2 : MonoBehaviour
         Physics.Raycast(ray, out hit, defaultLength);
         return hit;
     }
+    #endregion
 }
