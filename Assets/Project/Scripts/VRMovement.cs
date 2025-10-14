@@ -1,102 +1,69 @@
-// Note: Find other movement.cs script
-
 using UnityEngine;
+// Note: We no longer need the Oculus.Interaction.Locomotion namespace here
 
 /// <summary>
-/// This script handles player movement in a VR environment using the Oculus controller's thumbstick.
-/// It should be attached to the main player/character object that also has a CharacterController component.
+/// This script is now simplified to only handle gravity and other physics forces
+/// that are not directly controlled by user input for sliding.
+/// It works alongside a separate SlideLocomotionBroadcaster component.
 /// </summary>
-[RequireComponent(typeof(CharacterController))]
 public class VRMovement : MonoBehaviour
 {
-    [Tooltip("The speed at which the player moves. Can be adjusted in the Unity Inspector.")]
-    public float speed = 3.0f;
-
+    [Header("Physics Settings")]
     [Tooltip("The force of gravity applied to the player.")]
     public float gravity = -9.81f;
+    [Tooltip("The minimum Y-axis position the player can fall to before respawning.")]
+    public float minimumHeight = -50f;
 
-    // A reference to the OVRCameraRig, which is needed to determine the player's forward direction.
-    private OVRCameraRig cameraRig;
-    
-    // The CharacterController component handles collisions and movement.
-    private CharacterController characterController;
+    private UnityEngine.CharacterController _characterController;
+    private Vector3 _velocity; // Stores the player's vertical velocity for gravity
+    private Vector3 _startPosition; // To store the initial spawn position
 
-    // Stores the player's vertical velocity for gravity calculations.
-    private Vector3 velocity;
-
-    /// <summary>
-    /// This method is called when the script instance is being loaded.
-    /// </summary>
-    void Start()
+    void Awake()
     {
-        // Get the CharacterController component attached to this GameObject.
-        // The [RequireComponent] attribute ensures this component exists.
-        characterController = GetComponent<CharacterController>();
-
-        // Find the OVRCameraRig in the scene. This is a crucial part of the Meta XR SDK.
-        cameraRig = FindObjectOfType<OVRCameraRig>();
-        if (cameraRig == null)
-        {
-            Debug.LogError("OVRCameraRig not found in the scene. Please ensure one is present.");
-        }
+        // This script now expects to be on the same object as the CharacterController.
+        // This is typically the main "Player" root object.
+        _characterController = GetComponent<UnityEngine.CharacterController>();
+        _startPosition = transform.position;
     }
 
-    /// <summary>
-    /// This method is called once per frame.
-    /// </summary>
-    void Update()
+    void FixedUpdate()
     {
-        // Only proceed if the camera rig has been found.
-        if (cameraRig == null) return;
-
-        HandleMovement();
+        // This script is now only responsible for applying gravity.
         HandleGravity();
+        CheckForFallRespawn();
     }
 
-    /// <summary>
-    /// Calculates and applies movement based on controller input and head orientation.
-    /// </summary>
-    private void HandleMovement()
-    {
-        // Get the thumbstick input from the left Oculus Touch controller.
-        Vector2 thumbstickInput = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.LTouch);
-
-        // Determine the forward and right directions based on the headset's orientation.
-        Transform head = cameraRig.centerEyeAnchor;
-        Vector3 forward = head.forward;
-        Vector3 right = head.right;
-
-        // For ground movement, we want to ignore the vertical (Y) component of the headset's tilt.
-        // This prevents the player from moving up or down when they look up or down.
-        forward.y = 0;
-        right.y = 0;
-        forward.Normalize();
-        right.Normalize();
-
-        // Calculate the desired movement direction by combining the forward/backward and left/right inputs.
-        Vector3 desiredMoveDirection = (forward * thumbstickInput.y + right * thumbstickInput.x);
-
-        // Apply the movement to the CharacterController, scaling by speed and time.
-        characterController.Move(desiredMoveDirection * speed * Time.deltaTime);
-    }
-
-    /// <summary>
-    /// Applies gravity to the player.
-    /// </summary>
     private void HandleGravity()
     {
-        // Check if the character is on the ground.
-        if (characterController.isGrounded && velocity.y < 0)
+        if (_characterController.isGrounded && _velocity.y < 0)
         {
-            // If grounded, reset the vertical velocity to a small negative value.
-            // This helps keep the character firmly on the ground.
-            velocity.y = -2f;
+            _velocity.y = -2f; // Reset velocity when grounded
         }
 
         // Apply gravity to the vertical velocity over time.
-        velocity.y += gravity * Time.deltaTime;
+        _velocity.y += gravity * Time.fixedDeltaTime;
 
         // Apply the calculated gravity to the CharacterController.
-        characterController.Move(velocity * Time.deltaTime);
+        _characterController.Move(_velocity * Time.fixedDeltaTime);
     }
+
+    private void CheckForFallRespawn()
+    {
+        if (transform.position.y < minimumHeight)
+        {
+            RespawnPlayer();
+        }
+    }
+
+    private void RespawnPlayer()
+    {
+        _characterController.enabled = false;
+        transform.position = _startPosition;
+        _velocity.y = 0; // Reset falling speed
+        _characterController.enabled = true;
+    }
+
+    // You can keep your height reset logic if you are also using teleportation.
+    // ... (Your existing ResetHeightToBase method)
 }
+
