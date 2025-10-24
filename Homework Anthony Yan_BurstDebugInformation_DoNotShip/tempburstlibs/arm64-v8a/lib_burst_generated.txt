@@ -9,6 +9,7 @@ Library: C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Temp\BurstOutput\temp
 --target-framework=NetFramework
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.0.34f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Library\Burst
 --output=C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated
@@ -117,6 +118,7 @@ Library: C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Temp\BurstOutput\temp
 --float-mode=Fast
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.0.34f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Library\Burst
 --output=C:\Users\antho\Documents\GitHub\MI_Lab_Assignment\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated

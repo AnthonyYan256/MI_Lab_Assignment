@@ -88,6 +88,14 @@ public class InteractionMenu : MonoBehaviour, IHoverable
         {
             menuCanvas.SetActive(!menuCanvas.activeSelf);
         }
+
+        // It's good practice to disable actions if the menu is re-opened,
+        // unless you want the old action to continue.
+        // For the assignment, "Exit" implies the action continues, but
+        // opening the menu should probably stop the action.
+        // Let's stick to the "Exit" spec:
+        // If we just clicked to *open* the menu, we don't disable actions.
+        // If we just clicked to *close* the menu, it's like "Exit", so we also don't disable actions.
     }
 
     // --- Public Methods for UI Menu Buttons ---
@@ -130,7 +138,7 @@ public class InteractionMenu : MonoBehaviour, IHoverable
     /// <summary>
     /// Closes the menu without changing the currently active action.
     /// Called by the "Exit" button on the UI Canvas. Can also be called manually.
-    /// </summary>
+    /// </fsummary>
     public void CloseMenu()
     {
         if (menuCanvas != null)
@@ -158,4 +166,3 @@ public class InteractionMenu : MonoBehaviour, IHoverable
         }
     }
 }
-

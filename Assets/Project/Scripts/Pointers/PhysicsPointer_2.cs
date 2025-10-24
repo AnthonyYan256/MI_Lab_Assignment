@@ -23,7 +23,7 @@ public class PhysicsPointer_2 : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         // Check for the "Menu Open" button (Button B)
         CheckForMenuClick();

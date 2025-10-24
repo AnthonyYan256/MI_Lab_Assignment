@@ -18,12 +18,12 @@ public class Action_Rotate : InteractableAction
     /// </summary>
     void Update()
     {
-        // Check if the primary button ('A' on the right controller) is being held down.
-        if (OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RTouch))
+        // ** THE FIX IS HERE: Added "CanExecuteAction()" check **
+        // This stops the action from running if the pointer is over any UI.
+        if (CanExecuteAction() && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RTouch))
         {
             // Rotate the object around the specified axis while the button is held.
             transform.Rotate(rotationAxis, rotationSpeed * Time.deltaTime, Space.World);
         }
     }
 }
-
