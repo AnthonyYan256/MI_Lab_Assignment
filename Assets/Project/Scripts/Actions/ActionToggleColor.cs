@@ -39,7 +39,7 @@ public class Action_ToggleColor : InteractableAction
     void Update()
     {
         // Check if the primary button ('A' on the right controller) was pressed down this frame.
-        if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch))
+        if (CanExecuteAction() && IsPointerHoveringThisObject() && OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch))
         {
             PerformToggleColor();
         }

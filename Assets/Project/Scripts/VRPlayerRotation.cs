@@ -2,33 +2,40 @@ using UnityEngine;
 
 /// <summary>
 /// Implements standard "Snap Turning" for a VR player using the OVRInput system.
-/// This script should be on the parent PlayerObject, which has the OVRCameraRig
-/// as a child. It rotates the PlayerObject, and the camera follows.
+/// 
+/// MODIFICATION:
+/// - This script now *relies on* the `CharacterControllerDriver` script
+///   to be on the same object to handle collision safety.
+/// - PerformSnapTurn is now a simple `transform.Rotate()`.
 /// </summary>
+[RequireComponent(typeof(CharacterController))]
 public class VRPlayerRotation : MonoBehaviour
 {
+    [Header("Setup")]
+    [Tooltip("Drag the 'CenterEyeAnchor' (inside OVRCameraRig/TrackingSpace) here.")]
+    public Transform centerEyeAnchor; // Still needed for the driver, good to have.
+
+    [Header("Tuning")]
     [Tooltip("The number of degrees to snap turn with one flick of the stick.")]
     public float snapAngle = 45f;
 
     [Tooltip("The threshold the stick must pass to trigger a turn. Prevents drift.")]
-    public float thumbstickDeadzone = 0.4f; 
+    public float thumbstickDeadzone = 0.4f;
 
-    // We use the Right controller's thumbstick for rotation by default.
+    // --- Private ---
     private OVRInput.Controller controller = OVRInput.Controller.RTouch;
-    
-    // This flag prevents continuous rotation, forcing a "flick" motion.
     private bool isReadyToSnapTurn = true;
+    private CharacterController characterController;
 
-    // Note: We no longer need a reference to the cameraRig
-    // private OVRCameraRig cameraRig;
-
-    /// <summary>
-    /// This method is called when the script instance is being loaded.
-    /// </summary>
     void Start()
     {
-        // We don't need to find the camera rig anymore, as we are
-        // only rotating this object's transform.
+        // Get the CharacterController on this object
+        characterController = GetComponent<CharacterController>();
+
+        if (centerEyeAnchor == null)
+        {
+            Debug.LogError("VRPlayerRotation: 'Center Eye Anchor' is not set! This is required by the driver.", this);
+        }
     }
 
     void Update()
@@ -62,13 +69,18 @@ public class VRPlayerRotation : MonoBehaviour
     }
 
     /// <summary>
-    /// Rotates this player object by the specified angle.
+    /// Rotates the player object. The CharacterControllerDriver script
+    /// will handle collision and offset correction automatically.
     /// </summary>
-    /// <param name="angle">The angle to rotate (e.g., 45 or -45).</param>
     private void PerformSnapTurn(float angle)
     {
-        // 1. Rotate this object (the PlayerObject with the collider)
-        // The child OVRCameraRig will rotate automatically.
+        if (characterController == null) return;
+
+        // 1. Just rotate the parent transform.
+        // The CharacterControllerDriver.Update() will see the new offset
+        // between the (rotated) collider and the camera, and will
+        // call characterController.Move() to fix it safely.
         transform.Rotate(Vector3.up, angle);
     }
 }
+

@@ -17,7 +17,7 @@ public class Action_ScaleUp : InteractableAction
     void Update()
     {
         // Check if the primary button ('A' on the right controller) was pressed down this frame.
-        if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch))
+        if (CanExecuteAction() && IsPointerHoveringThisObject() && OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch))
         {
             // Increase the local scale of the object uniformly by the scale factor.
             transform.localScale += new Vector3(scaleFactor, scaleFactor, scaleFactor);

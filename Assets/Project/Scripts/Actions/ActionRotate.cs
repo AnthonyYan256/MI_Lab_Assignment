@@ -20,7 +20,7 @@ public class Action_Rotate : InteractableAction
     {
         // ** THE FIX IS HERE: Added "CanExecuteAction()" check **
         // This stops the action from running if the pointer is over any UI.
-        if (CanExecuteAction() && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RTouch))
+        if (CanExecuteAction() && IsPointerHoveringThisObject() && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RTouch))
         {
             // Rotate the object around the specified axis while the button is held.
             transform.Rotate(rotationAxis, rotationSpeed * Time.deltaTime, Space.World);

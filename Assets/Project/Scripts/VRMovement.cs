@@ -5,15 +5,23 @@ using UnityEngine;
 /// <summary>
 /// This script handles player movement in a VR environment using the Oculus controller's thumbstick.
 /// It should be attached to the main player/character object that also has a CharacterController component.
+/// 
+/// --- MODIFIED ---
+/// - Added a jump mechanic.
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class VRMovement : MonoBehaviour
 {
+    [Header("Movement")]
     [Tooltip("The speed at which the player moves. Can be adjusted in the Unity Inspector.")]
     public float speed = 3.0f;
 
+    [Header("Jumping & Gravity")]
     [Tooltip("The force of gravity applied to the player.")]
     public float gravity = -9.81f;
+    
+    [Tooltip("The height (in meters) the player will jump.")]
+    public float jumpHeight = 1.2f; // Added for jump
 
     // A reference to the OVRCameraRig, which is needed to determine the player's forward direction.
     private OVRCameraRig cameraRig;
@@ -21,7 +29,7 @@ public class VRMovement : MonoBehaviour
     // The CharacterController component handles collisions and movement.
     private CharacterController characterController;
 
-    // Stores the player's vertical velocity for gravity calculations.
+    // Stores the player's vertical velocity for gravity and jumping.
     private Vector3 velocity;
 
     /// <summary>
@@ -49,8 +57,33 @@ public class VRMovement : MonoBehaviour
         // Only proceed if the camera rig has been found.
         if (cameraRig == null) return;
 
+        // --- NEW ---
+        // Handle jump input first
+        HandleJump();
+        
+        // Handle horizontal movement
         HandleMovement();
+        
+        // Apply gravity last
         HandleGravity();
+    }
+
+    /// <summary>
+    /// Checks for jump input and applies upward velocity if grounded.
+    /// </summary>
+    private void HandleJump()
+    {
+        // Check if the character is on the ground
+        if (characterController.isGrounded)
+        {
+            // Check for the Jump button press (A on Left Controller)
+            if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.LTouch))
+            {
+                // Calculate the upward velocity needed to reach the jumpHeight
+                // Formula: v = Sqrt(h * -2 * g)
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
+        }
     }
 
     /// <summary>
@@ -100,3 +133,4 @@ public class VRMovement : MonoBehaviour
         characterController.Move(velocity * Time.deltaTime);
     }
 }
+
